@@ -9,6 +9,8 @@ function stationRequest(request, response) {
     validator.validateStationRequest(request.query);
   } catch(exception) {
 
+    response.writeHeader(400);
+
     if(validator.__DEBUG__) {
       return response.end(exception.stack);
     } else {

@@ -11,9 +11,16 @@ function dataselectRoute(request, response) {
   try {
     validator.validateDataselectRequest(request.query);
   } catch(exception) {
+
     response.writeHeader(400);
-    return response.end(exception.message);
-  }
+
+    if(validator.__DEBUG__) {
+      return response.end(exception.stack);
+    } else {
+      return response.end(exception.message);
+    }
+
+  }  
 
   // Get the routing information
   routingRequest(request, function(error, routes) {
