@@ -13,12 +13,11 @@
 
 const http = require("http");
 const Federator = require("./lib/federator");
-
-const FEDERATOR_HOST = "127.0.0.1";
-const FEDERATOR_PORT = 8080;
+const CONFIG = require("./config");
 
 module.exports = function(port, host, listenCallback) {
 
+  // Disable
   const FEDERATOR_TIMEOUT_MS = 0;
 
   // Create the federator server
@@ -32,7 +31,7 @@ module.exports = function(port, host, listenCallback) {
 
 if(require.main === module) {
 
-  new module.exports(FEDERATOR_PORT, FEDERATOR_HOST, function() {
+  new module.exports(CONFIG.PORT, CONFIG.HOST, function() {
     console.log("EIDA Federator has been initialized.");
   });
 
