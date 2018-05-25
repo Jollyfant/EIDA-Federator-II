@@ -190,7 +190,12 @@ function trimFirstRecord(data) {
    * Always trims the first mSEED record to prevent overlap
    */
 
-  return data.slice(new Header(data.slice(0, 64)).recordLength);
+  // This can fail due to bad mSEED
+  try {
+    return data.slice(new Header(data.slice(0, 64)).recordLength);
+  } catch(exception) {
+    return data;
+  }
 
 }
 
