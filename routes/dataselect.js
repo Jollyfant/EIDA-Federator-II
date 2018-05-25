@@ -39,7 +39,7 @@ function dataselectRoute(request, response) {
 
     routes.forEach(function(datacenter) {
       datacenter.params.forEach(function(parameters) {
-        expandedRoutes.push(datacenter.url + "?" + createChannelQuery(parameters));
+        expandedRoutes.push(datacenter.url + "?" + createChannelQuery(request.query, parameters));
       });
     });
 
@@ -50,22 +50,30 @@ function dataselectRoute(request, response) {
 
 }
 
-function createChannelQuery(parameters) {
+function createChannelQuery(userQuery, parameters) {
 
   /* FUNCTION createChannelQuery
    * Creates FDSN Station query for the channel expansion
    */
 
-  return querystring.stringify({
+  var queryObject = {
     "network": parameters.net,
     "station": parameters.sta,
     "location": parameters.loc,
     "channel": parameters.cha,
-    "start": parameters.start,
-    "end": parameters.end,
     "level": "channel",
     "format": "text"
-  });
+  }
+
+  // If a start time and end time are specified
+  if(userQuery.start) {
+    queryObject.start = userQuery.start;
+  }
+  if(userQuery.end) {
+    queryObject.end = userQuery.end;
+  }
+
+  return querystring.stringify(queryObject);
 
 }
 

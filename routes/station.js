@@ -56,7 +56,8 @@ function createStationQuery(userQuery, parameters) {
     "network": parameters.net,
     "station": parameters.sta,
     "location": parameters.loc,
-    "channel": parameters.cha
+    "channel": parameters.cha,
+    "level": "station"
   }
 
   if(userQuery.start || userQuery.starttime) {
