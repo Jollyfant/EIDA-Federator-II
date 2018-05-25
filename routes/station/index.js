@@ -1,6 +1,19 @@
-const routingRequest = require("../lib/router");
+/*
+ * federator/routes/station
+ *
+ * Handler for federated station route
+ *
+ * Author: Mathijs Koymans
+ * Copyright: ORFEUS Data Center, 2018
+ * License: MIT
+ *
+ */
+
+"use strict";
+
 const querystring = require("querystring");
-const validator = require("../lib/validator");
+const routingRequest = require("../../lib/router");
+const validator = require("../../lib/validator");
 
 function stationRequest(request, response) {
 

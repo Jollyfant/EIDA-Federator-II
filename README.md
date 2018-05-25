@@ -1,2 +1,2 @@
 # EIDA-Federator-II
-2nd prototype for a streaming federator using NodeJS
+Prototype for a streaming EIDA federator using NodeJS. Currently supports `FDSNWS-Dataselect` and `FDSNWS-Station`. Only GET requests are currently supported.
