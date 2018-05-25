@@ -2,6 +2,7 @@
 
 const routingRequest = require("../lib/router");
 const url = require("url");
+const Header = require("../lib/header")
 const querystring = require("querystring");
 const validator = require("../lib/validator");
 
@@ -92,7 +93,7 @@ function expandRoutes(request, response, routes) {
     // One route has been expanded
     emitter.on("data", function(thread) {
       channelsAsArray(thread.data()).forEach(function(stream) {
-        expandedStreamRequests.push(createDataselectQuery(thread.url.host, request.query, stream));
+        expandedStreamRequests = expandedStreamRequests.concat(createDataselectQuery(thread.url.host, request.query, stream));
       });
     });
 
@@ -157,7 +158,7 @@ function queryDataselect(request, response, streamRequests) {
     });
 
     mseedEmitter.on("data", function(thread) {
-      thread._chunks.forEach(response.write.bind(response));
+      response.write(trimFirstRecord(thread.data()));
     });
 
     mseedEmitter.on("end", function() {
@@ -171,6 +172,16 @@ function queryDataselect(request, response, streamRequests) {
 
 }
 
+function trimFirstRecord(data) {
+
+  /* FUNCTION trimFirstRecord
+   * Always trims the first mSEED record to prevent overlap
+   */
+
+  return data.slice(new Header(data.slice(0, 64)).recordLength);
+
+}
+
 function createDataselectQuery(host, userQuery, stream) {
 
   /* FUNCTION createDataselectQuery
@@ -179,23 +190,64 @@ function createDataselectQuery(host, userQuery, stream) {
 
   const FDSNWS_DATASELECT_PATH = "/fdsnws/dataselect/1/query";
 
+  var split = splitRequests(
+    userQuery.start || userQuery.starttime,
+    userQuery.end || userQuery.endtime
+  );
+
   // Create the new query object: use the expanded stream identifiers from FDSN Station
   // with the user start & end times
-  var queryObject = {
-    "network": stream.network, 
-    "station": stream.station,
-    "location": stream.location,
-    "channel": stream.channel,
-    "start": userQuery.start || userQuery.starttime,
-    "end": userQuery.end || userQuery.endtime
+  return split.map(function(request) {
+    var queryObject = {
+      "network": stream.network, 
+      "station": stream.station,
+      "location": stream.location,
+      "channel": stream.channel,
+      "start": request.start,
+      "end": request.end 
+    }
+
+    // Add the optional quality parameter
+    if(userQuery.quality) {
+      queryObject.quality = userQuery.quality;
+    }
+
+    return "http://" + host + FDSNWS_DATASELECT_PATH + "?" + querystring.stringify(queryObject); 
+
+  });
+
+}
+
+function splitRequests(start, end) {
+
+  // Maximum of 7 days per request
+  // At 200 Hz this is ~500M samples
+  const MAX_LENGTH_SECONDS = 7 * 86400 * 1000;
+
+  // Convert to timestamp
+  var start = new Date(validator.asUTC(start)).getTime();
+  var end = new Date(validator.asUTC(end)).getTime();
+
+  var requests = new Array();
+  var segmentEnd;
+
+  // Split the requests by the maximum
+  while(start < end) {
+
+    var segmentEnd = start + MAX_LENGTH_SECONDS;
+
+    // Save the request segment
+    requests.push({
+      "start": new Date(start).toISOString(),
+      "end": new Date(Math.min(end, segmentEnd)).toISOString()
+    });
+
+    // Next segment
+    start = segmentEnd;
+
   }
 
-  // Add the optional quality parameter
-  if(userQuery.quality) {
-    queryObject.quality = userQuery.quality;
-  }
-
-  return "http://" + host + FDSNWS_DATASELECT_PATH + "?" + querystring.stringify(queryObject); 
+  return requests;
 
 }
 
