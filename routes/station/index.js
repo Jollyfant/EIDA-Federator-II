@@ -45,11 +45,12 @@ function stationRequest(request, response) {
     }
 
     var expandedRoutes = new Array();
-
     routes.forEach(function(datacenter) {
+      var datacenterRoutes = new Array();
       datacenter.params.forEach(function(parameters) {
-        expandedRoutes.push(datacenter.url + "?" + createStationQuery(request.query, parameters));
+        datacenterRoutes.push(datacenter.url + "?" + createStationQuery(request.query, parameters));
       });
+      expandedRoutes.push(datacenterRoutes);
     });
 
     // Resolve the routes
@@ -142,7 +143,7 @@ function writeFDSNStationXMLHeaders() {
   const SENDER = "ORFEUS Data Center";
 
   var namespaces = [
-    "<FDSNStationXML ",
+    "<FDSNStationXML",
     "xmlns=\"http://www.fdsn.org/xml/station/1\"",
     "xmlns:ingv=\"https://raw.githubusercontent.com/FDSN/StationXML/master/fdsn-station.xsd\"",
     "schemaVersion=\"1.0\">"

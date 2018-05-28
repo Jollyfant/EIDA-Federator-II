@@ -49,11 +49,12 @@ function dataselectRoute(request, response) {
     }
 
     var expandedRoutes = new Array();
-
     routes.forEach(function(datacenter) {
+      var datacenterRoutes = new Array();
       datacenter.params.forEach(function(parameters) {
-        expandedRoutes.push(datacenter.url + "?" + createChannelQuery(request.query, parameters));
+        datacenterRoutes.push(datacenter.url + "?" + createChannelQuery(request.query, parameters));
       });
+      expandedRoutes.push(datacenterRoutes);
     });
 
     // Resolve the routes
@@ -100,18 +101,21 @@ function expandRoutes(request, response, routes) {
   request.streamManager.initialize(routes, function(emitter) {
 
     // Container for all expanded requests
-    var expandedStreamRequests = new Array();
+    var expandedStreamRequests = new Object();
 
     // One route has been expanded
     emitter.on("data", function(thread) {
+      if(!expandedStreamRequests.hasOwnProperty(thread.url.host)) {
+        expandedStreamRequests[thread.url.host] = new Array();
+      }
       channelsAsArray(thread.data()).forEach(function(stream) {
-        expandedStreamRequests = expandedStreamRequests.concat(createDataselectQuery(thread.url.host, request.query, stream));
+        expandedStreamRequests[thread.url.host] = expandedStreamRequests[thread.url.host].concat(createDataselectQuery(thread.url.host, request.query, stream));
       });
     });
 
     // The requests have been split
     emitter.on("end", function() {
-      queryDataselect(request, response, expandedStreamRequests);
+      queryDataselect(request, response, Object.values(expandedStreamRequests));
     });
 
   });
