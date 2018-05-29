@@ -19,7 +19,7 @@ function stationRequest(request, response) {
 
   // Validate the dataselect parameters
   try {
-    validator.validateStationRequest(request.query);
+    validator.validateStationRequest(request);
   } catch(exception) {
 
     response.writeHeader(400);

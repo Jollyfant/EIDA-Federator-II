@@ -22,7 +22,7 @@ function dataselectRoute(request, response) {
 
   // Validate the dataselect parameters
   try {
-    validator.validateDataselectRequest(request.query);
+    validator.validateDataselectRequest(request);
   } catch(exception) {
 
     response.writeHeader(400);
