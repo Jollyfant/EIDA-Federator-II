@@ -129,7 +129,26 @@ function createStationQuery(userQuery, parameters) {
     queryObject.endafter = userQuery.endafter;
   }
 
+  if(userQuery.format) {
+    queryObject.format = userQuery.format;
+  }
+
   return querystring.stringify(queryObject);
+
+}
+
+function TextHeaders(level) {
+
+  switch(level) {
+    case "network":
+      return "#Network|Description|StartTime|EndTime|TotalStations";
+    case "station":
+      return "#Network|Station|Latitude|Longitude|Elevation|SiteName|StartTime|EndTime";
+    case "channel":
+      return "#Network|Station|Location|Channel|Latitude|Longitude|Elevation|Depth|Azimuth|Dip|SensorDescription|Scale|ScaleFreq|ScaleUnits|SampleRate|StartTime|EndTime";
+    default:
+      return "#Network|Station|Latitude|Longitude|Elevation|SiteName|StartTime|EndTime";
+  }
 
 }
 
@@ -165,7 +184,8 @@ function stationResolve(request, response, streamRequests) {
    * Resolve parallel requests
    */
 
-  const CONTENT_TYPE = "application/xml";
+  const XML_CONTENT_TYPE = "application/xml";
+  const TXT_CONTENT_TYPE = "text/plain";
 
   var __headersWritten = false;
 
@@ -173,21 +193,38 @@ function stationResolve(request, response, streamRequests) {
 
     // Write the headers
     streamEmitter.once("header", function() {
+
       __headersWritten = true;
-      response.setHeader("Content-Type", CONTENT_TYPE);
-      response.write(writeFDSNStationXMLHeaders());
+
+      if(request.query.format !== "text") {
+        response.setHeader("Content-Type", XML_CONTENT_TYPE);
+        response.write(writeFDSNStationXMLHeaders());
+      } else {
+        response.setHeader("Content-Type", TXT_CONTENT_TYPE);
+        response.write(TextHeaders(request.query.level) + "\n");
+      }
+
     });
 
     // StationXML is received
     streamEmitter.on("data", function(thread) {
-      response.write(getNetworkSlice(thread.data()));
+
+      if(request.query.format === "text") {
+        response.write(thread.data().toString().split("\n").slice(1).join("\n"));
+      } else {
+        response.write(getNetworkSlice(thread.data()));
+      }
+
     });
 
     streamEmitter.on("end", function() {
 
       // If headers are written
       if(__headersWritten) {
-        return response.end("</FDSNStationXML>");
+        if(request.query.format !== "text") {
+          return response.end("</FDSNStationXML>");
+        }
+        return response.end();
       }
 
       // Empty response
