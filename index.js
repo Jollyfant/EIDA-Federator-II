@@ -27,6 +27,8 @@ module.exports = function(port, host, listenCallback) {
   federator.listen(port, host, listenCallback);
   federator.timeout = FEDERATOR_TIMEOUT_MS;
 
+  return federator;
+
 }
 
 if(require.main === module) {
