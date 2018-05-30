@@ -81,6 +81,17 @@ const testSuite = function() {
     });
   }
 
+  this.testInvalidStationLevel = function() {
+    self.request(self.getOptions({"path": "/fdsnws/station/1/query?level=invalid"}), function(statusCode, response) {
+      self.__callback(statusCode === 400 && response === "The requested level: invalid is invalid. Expected one of: network, station, location, channel");
+    });
+  }
+
+  this.testInvalidStationFormat = function() {
+    self.request(self.getOptions({"path": "/fdsnws/station/1/query?format=invalid"}), function(statusCode, response) {
+      self.__callback(statusCode === 400 && response === "The requested format: invalid is invalid. Expected one of: text, xml.");
+    });
+  }
 
   /* End testing functions body
    */
