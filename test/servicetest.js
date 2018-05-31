@@ -114,6 +114,17 @@ const testSuite = function() {
     });
   }
 
+  this.testDataselectQuery = function() {
+    self.request(self.getOptions({"path": "/fdsnws/dataselect/1/query?station=HGN&channel=BHZ&start=2017-01-01T00:00:00&end=2017-01-01T00:01:00"}), function(statusCode, response) {
+      self.__callback(statusCode === 200 && response.slice(8, 13) === "HGN  " && response.slice(13, 15) === "02" && response.slice(15, 18) === "BHZ" && response.slice(18, 20) === "NL");
+    });
+  }
+
+  this.testStationQuery = function() {
+    self.request(self.getOptions({"path": "/fdsnws/station/1/query?station=HGN&channel=BHZ&level=channel&format=text"}), function(statusCode, response) {
+      self.__callback(statusCode === 200 && response.split("\n").length > 1 && response.split("\n").slice(0, 1).join("") === "#Network|Station|Location|Channel|Latitude|Longitude|Elevation|Depth|Azimuth|Dip|SensorDescription|Scale|ScaleFreq|ScaleUnits|SampleRate|StartTime|EndTime");
+    });
+  }
 
   /* End testing functions body
    */

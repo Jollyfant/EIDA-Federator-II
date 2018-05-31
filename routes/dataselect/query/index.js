@@ -6,7 +6,7 @@
  * Author: Mathijs Koymans
  * Copyright: ORFEUS Data Center, 2018
  * License: MIT
- *
+*
  */
 
 "use strict";
