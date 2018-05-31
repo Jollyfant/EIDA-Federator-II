@@ -11,6 +11,9 @@
 
 "use strict";
 
+// Patch the require function
+require("./require");
+
 const http = require("http");
 const Federator = require("./lib/federator");
 const CONFIG = require("./config");

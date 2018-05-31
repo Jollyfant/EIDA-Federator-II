@@ -14,9 +14,9 @@
 const url = require("url");
 const querystring = require("querystring");
 
-const Header = require("../../../lib/libmseedjs/header")
-const routingRequest = require("../../../lib/router");
-const validator = require("../../../lib/validator");
+const Header = require("./lib/libmseedjs/header")
+const routingRequest = require("./lib/router");
+const validator = require("./lib/validator");
 
 function dataselectRoute(request, response) {
 
