@@ -14,8 +14,11 @@
 const federator = require("..");
 const http = require("http");
 
+const __HOST__ = "127.0.0.1";
+const __PORT__ = 8080;
+
 // Create a temporary federator and initialize the test suite
-const server = new federator(8080, "127.0.0.1", function() {
+const server = new federator(__PORT__, __HOST__, function() {
   new testSuite().initialize();
 });
 
@@ -81,17 +84,36 @@ const testSuite = function() {
     });
   }
 
-  this.testInvalidStationLevel = function() {
-    self.request(self.getOptions({"path": "/fdsnws/station/1/query?level=invalid"}), function(statusCode, response) {
-      self.__callback(statusCode === 400 && response === "The requested level: invalid is invalid. Expected one of: network, station, location, channel");
-    });
-  }
-
   this.testInvalidStationFormat = function() {
     self.request(self.getOptions({"path": "/fdsnws/station/1/query?format=invalid"}), function(statusCode, response) {
       self.__callback(statusCode === 400 && response === "The requested format: invalid is invalid. Expected one of: text, xml.");
     });
   }
+
+  this.testDataselectVersion = function() {
+    self.request(self.getOptions({"path": "/fdsnws/dataselect/1/version"}), function(statusCode, response) {
+      self.__callback(statusCode === 200 && response === "1.0.0");
+    });
+  }
+
+  this.testStationVersion = function() {
+    self.request(self.getOptions({"path": "/fdsnws/station/1/version"}), function(statusCode, response) {
+      self.__callback(statusCode === 200 && response === "1.0.0");
+    });
+  }
+
+  this.testStationWADL = function() {
+    self.request(self.getOptions({"path": "/fdsnws/station/1/application.wadl"}), function(statusCode, response) {
+      self.__callback(statusCode === 200 && response.length === 3359);
+    });
+  }
+
+  this.testDataselectWADL = function() {
+    self.request(self.getOptions({"path": "/fdsnws/dataselect/1/application.wadl"}), function(statusCode, response) {
+      self.__callback(statusCode === 200 && response.length === 2130);
+    });
+  }
+
 
   /* End testing functions body
    */
@@ -108,8 +130,11 @@ testSuite.prototype.getOptions = function(options) {
 
   // Overwrite default options
   return Object.assign({
-    "host": "127.0.0.1",
-    "port": 8080,
+    "headers": {
+      "User-Agent": "EIDA-Federator/0.0.1-testSuite"
+    },
+    "host": __HOST__,
+    "port": __PORT__,
     "path": "/",
     "method": "GET"
   }, options);

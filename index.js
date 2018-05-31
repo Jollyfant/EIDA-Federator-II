@@ -21,7 +21,7 @@ module.exports = function(port, host, listenCallback) {
   const FEDERATOR_TIMEOUT_MS = 0;
 
   // Create the federator server
-  const federator = http.createServer(Federator);
+  const federator = http.createServer(Federator.server);
 
   // Open for incoming connections
   federator.listen(port, host, listenCallback);

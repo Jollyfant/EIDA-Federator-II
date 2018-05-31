@@ -12,8 +12,8 @@
 "use strict";
 
 const querystring = require("querystring");
-const routingRequest = require("../../lib/router");
-const validator = require("../../lib/validator");
+const routingRequest = require("../../../lib/router");
+const validator = require("../../../lib/validator");
 
 function stationRequest(request, response) {
 
