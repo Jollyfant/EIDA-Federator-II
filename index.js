@@ -11,7 +11,7 @@
 
 "use strict";
 
-// Patch the require function
+// Globally patch the require function
 require("./require");
 
 const { createServer } = require("http");
@@ -26,8 +26,8 @@ module.exports = function(port, host, listenCallback) {
   const federator = createServer(server);
 
   // Replace with ENV variables
-  var port = process.env.SERVICE_PORT || port;
-  var host = process.env.SERVICE_HOST || host;
+  port = process.env.SERVICE_PORT || port;
+  host = process.env.SERVICE_HOST || host;
 
   federator.timeout = FEDERATOR_TIMEOUT_MS;
 
