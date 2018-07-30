@@ -14,7 +14,7 @@
 const url = require("url");
 const querystring = require("querystring");
 
-const Header = require("./lib/libmseedjs/header")
+const Header = require("libmseedjs/header")
 const routingRequest = require("./lib/router");
 const validator = require("./lib/validator");
 

@@ -14,27 +14,31 @@
 // Patch the require function
 require("./require");
 
-const http = require("http");
-const Federator = require("./lib/federator");
-const CONFIG = require("./config");
+const { createServer } = require("http");
+const { server } = require("./lib/federator");
 
 module.exports = function(port, host, listenCallback) {
 
-  // Disable
+  // Disable timeouts
   const FEDERATOR_TIMEOUT_MS = 0;
 
   // Create the federator server
-  const federator = http.createServer(Federator.server);
+  const federator = createServer(server);
+
+  // Replace with ENV variables
+  var port = process.env.SERVICE_PORT || port;
+  var host = process.env.SERVICE_HOST || host;
+
+  federator.timeout = FEDERATOR_TIMEOUT_MS;
 
   // Open for incoming connections
   federator.listen(port, host, listenCallback);
-  federator.timeout = FEDERATOR_TIMEOUT_MS;
-
-  return federator;
 
 }
 
 if(require.main === module) {
+
+  const CONFIG = require("./config");
 
   new module.exports(CONFIG.PORT, CONFIG.HOST, function() {
     console.log("EIDA Federator has been initialized.");

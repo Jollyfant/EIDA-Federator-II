@@ -1,0 +1,33 @@
+{
+  "name": "eida-federator-ii",
+  "version": "1.0.0",
+  "description": "NodeJS implementation of EIDA federator",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "dependencies": {
+    "libmseedjs": "^1.0.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jollyfant/EIDA-Federator-II.git"
+  },
+  "keywords": [
+    "NodeJS",
+    "EIDA",
+    "Federator"
+  ],
+  "author": "Mathijs Koymans",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Jollyfant/EIDA-Federator-II/issues"
+  },
+  "homepage": "https://github.com/Jollyfant/EIDA-Federator-II#readme"
+}
