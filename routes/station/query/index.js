@@ -12,6 +12,8 @@
 "use strict";
 
 const querystring = require("querystring");
+const { get } = require("http");
+const { parse } = require("url");
 const routingRequest = require("./lib/router");
 const validator = require("./lib/validator");
 
@@ -47,6 +49,11 @@ function stationRequest(request, response) {
     if(routes.length === 0) {
       response.writeHeader(204);
       return response.end();
+    }
+
+    // Since only a single route was returned we can pipe directory from the datacenter
+    if(routes.length === 1) {
+      return get("http://" + parse(routes.pop().url).host + request.url, x => x.pipe(response));
     }
 
     var expandedRoutes = new Array();

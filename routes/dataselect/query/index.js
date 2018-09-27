@@ -14,6 +14,7 @@
 const url = require("url");
 const querystring = require("querystring");
 
+const { get } = require("http");
 const Header = require("./lib/libmseedjs/header")
 const routingRequest = require("./lib/router");
 const validator = require("./lib/validator");
@@ -46,6 +47,11 @@ function dataselectRoute(request, response) {
     if(routes.length === 0) {
       response.writeHeader(204);
       return response.end();
+    }
+
+    // Since only a single route was returned we can pipe directory from the datacenter
+    if(routes.length === 1) {
+      return get("http://" + url.parse(routes.pop().url).host + request.url, x => x.pipe(response));
     }
 
     var expandedRoutes = new Array();
